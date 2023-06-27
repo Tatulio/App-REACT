@@ -12,7 +12,7 @@ import Typography from "@mui/material/Typography";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { Button } from "@mui/material";
 
-const CardMovie = ({ movie, handleLike }) => {
+const CardMovie = ({ movie, handleLike, deleteMovieById }) => {
   return (
     <Card sx={{ width: 300, height: 500 }}>
       <CardHeader title={movie.name} subheader={movie.createdAt} />
@@ -27,10 +27,11 @@ const CardMovie = ({ movie, handleLike }) => {
           {movie.description}
         </Typography>
       </CardContent>
-      <CardActions disableSpacing>
+      <CardActions sx={{display:"flex", justifyContent:"space-between"}}>
         <IconButton aria-label="add to favorites">
           <FavoriteIcon color={movie.isLiked ? "error" : "disabled" } onClick={() =>handleLike(movie)}/>
-        </IconButton>      
+        </IconButton> 
+        <Button type="button" variant="contained" color="primary" onClick={()=>deleteMovieById(movie.id)}>Eliminar</Button>     
       </CardActions>       
     </Card>
   );

@@ -4,6 +4,8 @@ import Header from '../common/header/Header'
 import CardMovie from '../common/cardMovie/CardMovie'
 import styles from  "./Home.module.css"
 import confetti from "canvas-confetti"
+import { Button } from '@mui/material'
+import CreateMovieModal from '../common/createMovieModal/CreateMovieModal'
 
 
 
@@ -11,14 +13,22 @@ const Home = () => {
 
     const [movies, setMovies] = useState([])
     const [dispatchLike, setDispatchLike] = useState(false)
-    const [favorite, setFavorite] = useState(false)
+    const [favorite, setFavorite] = useState(false)    
+    const [open, setOpen] = useState(false);
+    const [isMovieCreate, setIsMovieCreate] = useState(false);
+    const [isMovieDelete, setIsMovieDelete] = useState(false)
+
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
     useEffect(() => {
         axios
         .get("http://localhost:5000/movies")
         .then((res) => setMovies(res.data))
         .catch((err) => console.log(err))
         setDispatchLike(false)
-    },[dispatchLike])
+        setIsMovieCreate(false)
+        setIsMovieDelete(false)
+    },[dispatchLike, isMovieCreate, isMovieDelete])
 
     const handleLike = (movie) => {
         if (!movie.isLiked){
@@ -34,21 +44,26 @@ const Home = () => {
             })
         }
         
-        axios.patch(`http://localhost:5000/movies/${movie.id}`, {isLiked: !movie.isLiked})
+        axios.patch(`http://localhost:5000/movies/${movie.id}`, {
+            isLiked: !movie.isLiked
+        })
         .then(res => setDispatchLike(true))
         .catch((err) => console.log(err))
     }
 
     const moviesFiltered = movies.filter(movie => movie.isLiked)
-    /* const deleteMovieById = (id) => {
+    const deleteMovieById = (id) => {
         axios.delete(`http://localhost:5000/movies/${id}`)
-        .then(res =>)
-    }*/
+        .then(res =>setIsMovieDelete(true))
+        .catch(err => console.log(err))
+    }
 
 
     return (
     <>
-        <Header setFavorite={setFavorite} />
+        <Header setFavorite={setFavorite} />        
+        <Button onClick={handleOpen}>Agregar Pelicula</Button>
+        <CreateMovieModal open={open} handleClose={handleClose} setIsMovieCreate={setIsMovieCreate}/>
         <div className={styles.containerCards}>
         {!favorite
             ? movies.map((movie) => {
@@ -57,7 +72,7 @@ const Home = () => {
                     movie={movie}
                     key={movie.id}
                     handleLike={handleLike}
-                    //deleteMovieById={deleteMovieById}
+                    deleteMovieById={deleteMovieById}
                 />
                 );
             })
@@ -67,7 +82,7 @@ const Home = () => {
                     movie={movie}
                     key={movie.id}
                     handleLike={handleLike}
-                    //deleteMovieById={deleteMovieById}
+                    deleteMovieById={deleteMovieById}
                 />
                 );
             })}
